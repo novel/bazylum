@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <X11/Xlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sqlite3.h>
+#include <stdlib.h>
 
 #define DATABASE	"bazylum.db"
+#define VERSION		"bazylum 0.1"
 
 void sql_query(sqlite3 *db, const char *query)
 {
@@ -27,9 +30,22 @@ int main(int argc, char **argv)
 	int active_time = 0;
 	sqlite3 *db;
 	int rc;
+	int opt;
+	short foreground = 0;
+
+	while ((opt = getopt(argc, argv, "vf")) != -1) {
+		switch (opt) {
+			case 'v':
+				printf("%s\n", VERSION);
+				exit(0);
+			case 'f':
+				foreground = 1;
+				break;
+		}
+	}
 
 	dpy = XOpenDisplay(NULL);
-	screen = DefaultScreen(dpy);	
+	screen = DefaultScreen(dpy);
 
 	Window w = 0;
 	
@@ -65,7 +81,7 @@ int main(int argc, char **argv)
 	  //              printf("data[%d] %d\n", i, data[i]);
 		active_window = data[0];              
 
-		props = XListProperties(dpy, active_window, &n);	
+		props = XListProperties(dpy, active_window, &n);
 	//	printf("n = %d\n", n);
 
 	//	for (i = 0; i < n; i++) {
