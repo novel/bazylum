@@ -8,8 +8,9 @@
 #define DATABASE	"bazylum.db"
 #define VERSION		"bazylum 0.1"
 
-void sql_query(sqlite3 *db, const char *query)
+void log_window_activity(char *window_name, int timeout)
 {
+	printf("window [%s] was active for %d seconds.\n", window_name, timeout);
 }
 
 int main(int argc, char **argv)
@@ -32,6 +33,7 @@ int main(int argc, char **argv)
 	int rc;
 	int opt;
 	short foreground = 0;
+	pid_t pid, sid;
 
 	while ((opt = getopt(argc, argv, "vf")) != -1) {
 		switch (opt) {
@@ -41,6 +43,22 @@ int main(int argc, char **argv)
 			case 'f':
 				foreground = 1;
 				break;
+		}
+	}
+
+	if (foreground != 1) {
+		pid = fork();
+		if (pid < 0) {
+			exit(1);
+		} else if (pid > 0) {
+			exit(0);
+		}
+
+		umask(0);
+
+		sid = setsid();
+		if (sid < 0) {
+			exit(1);
 		}
 	}
 
@@ -103,15 +121,13 @@ int main(int argc, char **argv)
 			&bytes,
 			(char**)&data);
 
-
-	//	 for (i=0; i < nitems; i++)
-	  //              printf("data[%d] %d\n", i, data[i]);
-
-		if (prev_window != NULL) {	
+		if (prev_window != NULL) {
 			if (strcmp(data, prev_window) == 0) {
 				active_time += timeout;
 			} else {
-				printf("%s has been active for %d seconds\n", prev_window, active_time);
+				//printf("%s has been active for %d seconds\n", prev_window, active_time);
+				if (active_time != 0)
+					log_window_activity(prev_window, active_time);
 				active_time = 0;
 			}
 		}
