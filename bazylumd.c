@@ -8,9 +8,14 @@
 #define DATABASE	"bazylum.db"
 #define VERSION		"bazylum 0.1"
 
-void log_window_activity(char *window_name, int timeout)
+void log_window_activity(sqlite3 *db, char *window_name, int timeout)
 {
-	printf("window [%s] was active for %d seconds.\n", window_name, timeout);
+	char *query = sqlite3_mprintf("INSERT INTO bazylum(window_name, window_time) VALUES ('%q', %d)", window_name, timeout);
+		
+	printf("query: %s\n", query);
+
+	sqlite3_exec(db, query, 0, 0, 0);
+	sqlite3_free(query);
 }
 
 int main(int argc, char **argv)
@@ -127,7 +132,7 @@ int main(int argc, char **argv)
 			} else {
 				//printf("%s has been active for %d seconds\n", prev_window, active_time);
 				if (active_time != 0)
-					log_window_activity(prev_window, active_time);
+					log_window_activity(db, prev_window, active_time);
 				active_time = 0;
 			}
 		}
