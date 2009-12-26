@@ -11,11 +11,20 @@
 
 void log_window_activity(sqlite3 *db, char *window_name, int timeout)
 {
+	int rc;
+	char *err;
 	char *query = sqlite3_mprintf("INSERT INTO bazylum(window_name, window_time) VALUES ('%q', %d)", window_name, timeout);
 		
 	printf("query: %s\n", query);
 
-	sqlite3_exec(db, query, 0, 0, 0);
+	rc = sqlite3_exec(db, query, 0, 0, &err);
+
+	if (SQLITE_OK != rc) {
+		fprintf(stderr, "Error inserting data: %s\n", err);
+		sqlite3_free(err);
+		exit(1);
+	}
+
 	sqlite3_free(query);
 }
 
@@ -27,7 +36,7 @@ sqlite3* init_database()
 
 	rc = sqlite3_open(DATABASE, &db);
 
-	if (rc != SQLITE_OK) {
+	if (SQLITE_OK != rc) {
 		fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
 		sqlite3_close(db);
 		exit(1);
