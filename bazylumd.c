@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sqlite3.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #define DATABASE	"bazylum.db"
 #define VERSION		"bazylum 0.1"
@@ -39,10 +40,11 @@ char* x11_get_active_window_name(Display *dpy, Window root_window)
 	Atom actual_type;
 	Atom *props;
 	int actual_format, status;
-	long nitems, bytes;
+	unsigned long nitems, bytes;
 	long *data;
 	Window active_window;
 	int n;
+	char *window_name;
 
 	status = XGetWindowProperty(
 		dpy,
@@ -60,6 +62,8 @@ char* x11_get_active_window_name(Display *dpy, Window root_window)
 
 	active_window = data[0];              
 
+	XFree(data);
+
 	props = XListProperties(dpy, active_window, &n);
 
 	status = XGetWindowProperty(
@@ -76,7 +80,11 @@ char* x11_get_active_window_name(Display *dpy, Window root_window)
 		&bytes,
 		(unsigned char**)&data);
 
-	return (char *)data;
+	window_name = strdup((char *)data);
+
+	XFree(data);
+
+	return window_name;
 }
 
 int main(int argc, char **argv)
@@ -85,7 +93,6 @@ int main(int argc, char **argv)
 	int screen;
 	char *prev_window = NULL;
 	char *cur_window;
-	int i, n;
 	int timeout = 1;
 	int active_time = 0;
 	sqlite3 *db;
@@ -130,6 +137,7 @@ int main(int argc, char **argv)
 	/* init database connection */
 	db = init_database();
 
+	/* main loop */
 	for (;;) {
 		cur_window = x11_get_active_window_name(dpy, w);
 
@@ -141,9 +149,14 @@ int main(int argc, char **argv)
 					log_window_activity(db, prev_window, active_time);
 				active_time = 0;
 			}
+
+			free(prev_window);
 		}
 
+
 		prev_window = strdup(cur_window);
+
+		free(cur_window);
 
 		sleep(timeout);
 	}
