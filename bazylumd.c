@@ -15,7 +15,7 @@ void log_window_activity(sqlite3 *db, char *window_name, int timeout)
 	char *err;
 	char *query = sqlite3_mprintf("INSERT INTO bazylum(window_name, window_time) VALUES ('%q', %d)", window_name, timeout);
 		
-	printf("query: %s\n", query);
+	/* printf("query: %s\n", query); */
 
 	rc = sqlite3_exec(db, query, 0, 0, &err);
 
