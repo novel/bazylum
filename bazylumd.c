@@ -23,12 +23,25 @@ sqlite3* init_database()
 {
 	int rc;
 	sqlite3 *db;
+	char *err;
 
 	rc = sqlite3_open(DATABASE, &db);
 
 	if (rc != SQLITE_OK) {
 		fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
 		sqlite3_close(db);
+		exit(1);
+	}
+
+	/* create table if doesn't exist */
+	rc = sqlite3_exec(db, "CREATE TABLE IF NOT EXISTS bazylum(id integer primary key, \
+		       window_name varchar(255) not null, window_time int not null, \
+		       \"timestamp\" TEXT DEFAULT (strftime('%Y-%m-%dT%H:%M','now', 'localtime')));",
+		       0, 0, &err);
+
+	if (SQLITE_OK != rc) {
+		fprintf(stderr, "Wasn't able to create a schema: %s\n", err);
+		sqlite3_free(err);
 		exit(1);
 	}
 
@@ -162,6 +175,7 @@ int main(int argc, char **argv)
 	}
 
 	XCloseDisplay(dpy);
+	sqlite3_close(db);
 
 	return 0;
 }
