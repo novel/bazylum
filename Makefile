@@ -1,5 +1,19 @@
-CFLAGS=-g -Wall
+CFLAGS = -g -Wall
+RM = rm -f
 
-all:
-	gcc $(CFLAGS) `pkg-config --libs --cflags x11 sqlite3` -o bazylumd bazylumd.c
-	gcc $(CFLAGS) `pkg-config --libs --cflags x11 sqlite3` -o bazylum bazylum.c
+bazylumd_OBJS = bazylumd.o utils.o
+bazylum_OBJS = bazylum.o utils.o
+
+all: bazylumd bazylum
+
+bazylumd: $(bazylumd_OBJS)
+	gcc $(CFLAGS) `pkg-config --libs --cflags x11 sqlite3` -o bazylumd $(bazylumd_OBJS) 
+	
+bazylum: $(bazylum_OBJS)
+	gcc $(CFLAGS) `pkg-config --libs --cflags x11 sqlite3` -o bazylum $(bazylum_OBJS)
+
+.c.o:
+	gcc $(CFLAGS) `pkg-config --cflags x11 sqlite3` -c $*.c
+
+clean:
+	$(RM) bazylum bazylumd *.o
