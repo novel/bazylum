@@ -15,8 +15,6 @@ short int does_config_exist()
 
 	config_path = expanduser(CONFIG_PATH);
 
-	printf("Using config dir: %s\n", config_path);
-
 	status = stat(config_path, &sb);
 
 	free(config_path);

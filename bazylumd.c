@@ -35,12 +35,15 @@ sqlite3* init_database()
 {
 	int rc;
 	sqlite3 *db;
-	char *err;
+	char *err, *database_path;
 
-	rc = sqlite3_open(DATABASE, &db);
+	database_path = expanduser(DATABASE);
+
+	rc = sqlite3_open(database_path, &db);
+	free(database_path);
 
 	if (SQLITE_OK != rc) {
-		fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
+		fprintf(stderr, "%s: %s\n", DATABASE, sqlite3_errmsg(db));
 		sqlite3_close(db);
 		exit(1);
 	}
@@ -136,7 +139,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-	printf("database: %s\n", DATABASE);
 	create_config_if_not_exists();
 
 	if (foreground != 1) {
