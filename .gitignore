@@ -1,5 +1,6 @@
 *.swp
 *.core
 *.db
+*.o
 bazylum
 bazylumd

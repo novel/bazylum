@@ -6,7 +6,10 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#define DATABASE	"bazylum.db"
+#include "config.h"
+#include "utils.h"
+
+#define DATABASE	CONFIG_PATH "/bazylum.db"
 #define VERSION		"bazylum 0.1"
 
 void log_window_activity(sqlite3 *db, char *window_name, int timeout)
@@ -132,6 +135,9 @@ int main(int argc, char **argv)
 				break;
 		}
 	}
+
+	printf("database: %s\n", DATABASE);
+	create_config_if_not_exists();
 
 	if (foreground != 1) {
 		pid = fork();
