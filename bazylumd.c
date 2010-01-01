@@ -150,6 +150,12 @@ int main(int argc, char **argv)
 	}
 
 	dpy = XOpenDisplay(NULL);
+	
+	if (dpy == NULL) {
+		fprintf(stderr, "Error: cannot open display\n");
+		exit(1);
+	}
+	
 	screen = DefaultScreen(dpy);
 
 	Window w = 0;
