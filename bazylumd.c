@@ -72,8 +72,6 @@ char* x11_get_active_window_name(Display *dpy, Window root_window)
 	Window active_window;
 	char *window_name;
 
-	printf("%s start\n", __FUNCTION__);
-
 	status = XGetWindowProperty(
 		dpy,
 		root_window,
@@ -88,19 +86,14 @@ char* x11_get_active_window_name(Display *dpy, Window root_window)
 		&bytes,
 		(unsigned char**)&data);
 
-	if (status == BadWindow) {
-		printf("dfsd=n");
-	}
-
 	active_window = data[0];
 
-	printf("win 0x%lx, status: %d\n", active_window, status);
+	/*printf("win 0x%lx, status: %d\n", active_window, status);*/
+	XFree(data);
 
 	if ((int)active_window == 0) {
-		printf("bdaaaash\n");
+		return strdup("desktop");
 	}
-
-	XFree(data);
 
 	status = XGetWindowProperty(
 		dpy,
@@ -116,17 +109,10 @@ char* x11_get_active_window_name(Display *dpy, Window root_window)
 		&bytes,
 		(unsigned char**)&data);
 
-	if (status == BadWindow) {
-		printf("fofodfofd!!!");
-		exit(1);
-	}
-
 	window_name = strdup((char *)data);
 
 	XFree(data);
 	
-	printf("%s end\n", __FUNCTION__);
-
 	return window_name;
 }
 
