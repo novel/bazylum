@@ -5,10 +5,8 @@
 #include <string.h>
 #include <sqlite3.h>
 
+#include "db.h"
 #include "config.h"
-#include "utils.h"
-
-#define	DATABASE	CONFIG_PATH "/bazylum.db"
 
 static int stat_callback(void *argno, int argc, char **argv, char **colname)
 {
@@ -16,25 +14,6 @@ static int stat_callback(void *argno, int argc, char **argv, char **colname)
 
 	printf("%s: %d sec\n", argv[0], atoi(argv[1]));
 	return 0;
-}
-
-sqlite3 *open_database()
-{
-	int rc;
-	sqlite3 *db;
-	char *database_path;
-
-	database_path = expanduser(DATABASE);
-	rc = sqlite3_open(database_path, &db);
-	free(database_path);
-
-	if (SQLITE_OK != rc) {
-		fprintf(stderr, "Cannot open database: %s\n", sqlite3_errmsg(db));
-		sqlite3_close(db);
-		exit(1);
-	}
-
-	return db;
 }
 
 void do_stat()

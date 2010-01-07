@@ -4,7 +4,7 @@ CFLAGS = -g -Wall `pkg-config --cflags x11 sqlite3`
 LDFLAGS = `pkg-config --libs x11 sqlite3`
 RM = rm -f
 
-COMMON_OBJS = utils.o config.o
+COMMON_OBJS = utils.o config.o db.o
 
 bazylumd_OBJS = bazylumd.o $(COMMON_OBJS)
 bazylum_OBJS = bazylum.o $(COMMON_OBJS)
