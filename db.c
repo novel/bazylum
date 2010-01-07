@@ -25,3 +25,17 @@ sqlite3 *open_database()
 	return db;
 }
 
+void db_query(sqlite3 *db, const char *query,
+		int (*callback)(void*,int,char**,char**),
+		void *data)
+{
+	int rc;
+	char *err;
+
+	rc = sqlite3_exec(db, query, callback, data, &err);
+	if (SQLITE_OK != rc) {
+		fprintf(stderr, "Error executing query: %s\n", err);
+		sqlite3_free(err);
+		exit(1);
+	}
+}

@@ -11,4 +11,8 @@
 
 sqlite3 *open_database();
 
+void db_query(sqlite3 *db, const char *query,
+		int (*callback)(void*,int,char**,char**),
+		void *data);
+
 #endif /* __DB_H */

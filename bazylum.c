@@ -19,20 +19,14 @@ static int stat_callback(void *argno, int argc, char **argv, char **colname)
 void do_stat()
 {
 	sqlite3 *db;
-	int rc;
-	char *err;
 
 	/* should be moved to main() when have more commands */
 	db = open_database();
 
-	rc = sqlite3_exec(db, "SELECT window_name,SUM(window_time) AS total_time FROM bazylum "
-			"GROUP BY window_name ORDER BY total_time DESC", stat_callback,
-			0, &err);
-	if (SQLITE_OK != rc) {
-		fprintf(stderr, "Error executing query: %s\n", err);
-		sqlite3_free(err);
-		exit(1);
-	}
+	db_query(db, "SELECT window_name,SUM(window_time) AS total_time "
+			"FROM bazylum GROUP BY window_name "
+		       	"ORDER BY total_time DESC ",
+			stat_callback, 0);
 }
 
 int main(int argc, char **argv)
