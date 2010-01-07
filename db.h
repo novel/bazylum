@@ -9,7 +9,7 @@
 #	define	DATABASE	CONFIG_PATH "/bazylum.db"
 #endif /* DATABASE */
 
-sqlite3 *open_database();
+sqlite3* db_open();
 
 void db_query(sqlite3 *db, const char *query,
 		int (*callback)(void*,int,char**,char**),

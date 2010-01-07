@@ -21,7 +21,7 @@ void do_stat()
 	sqlite3 *db;
 
 	/* should be moved to main() when have more commands */
-	db = open_database();
+	db = db_open();
 
 	db_query(db, "SELECT window_name,SUM(window_time) AS total_time "
 			"FROM bazylum GROUP BY window_name "

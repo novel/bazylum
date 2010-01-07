@@ -6,7 +6,7 @@
 #include "db.h"
 #include "utils.h"
 
-sqlite3 *open_database()
+sqlite3* db_open()
 {
 	int rc;
 	sqlite3 *db;
