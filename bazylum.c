@@ -62,8 +62,8 @@ void do_stat()
 		       	"ORDER BY total_time DESC",
 			stat_callback, bz_stat);
 
-	db_query(db, "SELECT AVG(window_time) as avg_time,"
-			"MAX(window_time) as max_time "
+	db_query(db, "SELECT AVG(window_time) AS avg_time,"
+			"MAX(window_time) AS max_time "
 			"FROM bazylum", aggr_callback, bz_stat);
 
 	list_do(bz_stat->window_stat, win_stat_print);
