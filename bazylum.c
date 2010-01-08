@@ -8,12 +8,20 @@
 #include "bazylum.h"
 #include "db.h"
 #include "config.h"
+#include "list.h"
 
-static int stat_callback(void *argno, int argc, char **argv, char **colname)
+static int stat_callback(void *data, int argc, char **argv, char **colname)
 {
+	struct window_stat *window_st;
+
 	assert(argc == 2);
 
-	printf("%s: %d sec\n", argv[0], atoi(argv[1]));
+	window_st = malloc(sizeof (struct window_stat));
+	window_st->window_name = strdup(argv[0]);
+	window_st->window_time = atoi(argv[1]);
+
+	list_append((&((struct bazylum_stat *)data)->window_stat), window_st);
+
 	return 0;
 }
 
@@ -28,26 +36,41 @@ static int aggr_callback(void *data, int argc, char **argv, char **colname)
 	return 0;
 }
 
+void win_stat_print(void *data) {
+	printf("%s: %d sec\n", ((struct window_stat *)data)->window_name,
+			((struct window_stat *)data)->window_time);
+}
+
+void win_stat_free(void *data) {
+	if (((struct window_stat *)data)->window_name != NULL) {
+		free(((struct window_stat *)data)->window_name);
+	}	
+}
+
 void do_stat()
 {
 	sqlite3 *db;
 	struct bazylum_stat *bz_stat = 
-		malloc(sizeof (struct bazylum_stat*));
-
+		malloc(sizeof (struct bazylum_stat));
+	bz_stat->window_stat = NULL;
+		
 	/* should be moved to main() when have more commands */
 	db = db_open();
 
 	db_query(db, "SELECT window_name,SUM(window_time) AS total_time "
 			"FROM bazylum GROUP BY window_name "
 		       	"ORDER BY total_time DESC",
-			stat_callback, 0);
+			stat_callback, bz_stat);
 
 	db_query(db, "SELECT AVG(window_time) as avg_time,"
 			"MAX(window_time) as max_time "
 			"FROM bazylum", aggr_callback, bz_stat);
 
+	list_do(bz_stat->window_stat, win_stat_print);
 	printf("\navg window active time: %d sec\n", bz_stat->avg_time);
 	printf("longest active time: %d sec\n", bz_stat->max_time);
+
+	list_free(&(bz_stat->window_stat), win_stat_free);
 
 	if (bz_stat)
 		free(bz_stat);
