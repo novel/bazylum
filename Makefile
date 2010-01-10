@@ -3,6 +3,8 @@ LD = gcc
 CFLAGS = -g -Wall `pkg-config --cflags x11 sqlite3`
 LDFLAGS = `pkg-config --libs x11 sqlite3`
 RM = rm -f
+INSTALL = install 
+DESTDIR ?= /usr/local
 
 COMMON_OBJS = utils.o config.o db.o list.o
 
@@ -19,6 +21,11 @@ bazylum: $(bazylum_OBJS)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $<
+
+install: all
+	@for app in bazylum bazylumd; do \
+		$(INSTALL) $$app $(DESTDIR)/bin/$$app; \
+	done
 
 clean:
 	$(RM) bazylum bazylumd *.o
