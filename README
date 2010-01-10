@@ -1,0 +1,62 @@
+Bazylum
+===============================================================
+Bazylum is a tool which can show you information who long a window
+of certain type was active, for example, you will know that you
+firefox window for active for, say, 2 hours and pidgin for 1 hour.
+
+Compilation and Installation
+---------------------------------------------------------------
+To compile bazylum you need x11 and sqlite header files (i.e.
+if you're using binary based distro you have to install -dev
+packages).
+
+To build it, just type:
+
+	make
+
+It should not take a lot of time to build it. When done, you can
+install it using:
+
+	make install
+
+By defaults it installs stuff into /usr/local/bin. You can change
+this behavior by defining DESTDIR, e.g.:
+
+	make install DESTDIR=/tmp/bin
+
+Usage
+---------------------------------------------------------------
+Bazylum consists of two parts: daemon and client. Daemon gathers
+information about window activity and writes it to database.
+You can start it from ~/.xinitrc for example, like:
+
+	bazylumd
+
+it will fork into background by default. You can start it in
+foreground mode as well, just pass '-f' arg:
+
+	bazylumd -f
+
+To obtain actual reports, use 'bazylum' tool. For now it supports
+only 'stat' command it looks like this:
+
+(14:44) novel@dirtyvegas:~ %> bazylum stat
+urxvt: 9952 sec
+Navigator: 3934 sec
+gvim: 1818 sec
+xv: 1515 sec
+pidgin: 121 sec
+desktop: 10 sec
+Dialog: 6 sec
+
+avg window active time: 25 sec
+longest active time: 658 sec
+(14:44) novel@dirtyvegas:~ %>
+
+Actually, all information is stored in ~/.bazylum/bazylum.db, so you
+can easily generate various reports you need using SQL flexibility.
+
+If you have any ideas, error reports, etc, feel free to drop me
+an e-mail: novel@FreeBSD.org
+
+Roman Bogorodsiy
