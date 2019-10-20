@@ -8,21 +8,23 @@ Compilation and Installation
 ---------------------------------------------------------------
 To compile bazylum you need x11 and sqlite header files (i.e.
 if you're using binary based distro you have to install -dev
-packages).
+packages), and meson build system.
 
 To build it, just type:
 
-	make
+	mkdir builddir
+	meson builddir
+	ninja -C builddir
 
 It should not take a lot of time to build it. When done, you can
 install it using:
 
-	make install
+	ninja -C builddir install
 
 By defaults it installs stuff into /usr/local/bin. You can change
 this behavior by defining DESTDIR, e.g.:
 
-	make install DESTDIR=/tmp/bin
+	DESTDIR=/path/to/staging/root ninja -C builddir install
 
 Usage
 ---------------------------------------------------------------
