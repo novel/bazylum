@@ -1,0 +1,25 @@
+sudo: false
+
+os: linux
+dist: bionic
+addons:
+  apt:
+    packages:
+    - meson
+    - ninja-build
+    - libsqlite3-dev
+    - libx11-dev
+
+language: python
+
+python: 3.6
+
+matrix:
+  include:
+    - env: CC=gcc
+    - env: CC=clang
+
+script:
+  - meson builddir
+  - ninja -C builddir
+  - ninja -C builddir test
