@@ -116,6 +116,12 @@ char* x11_get_active_window_name(Display *dpy, Window root_window)
 	return window_name;
 }
 
+void usage(void)
+{
+	fprintf(stderr, "usage: bazylumd [-v] [-f]\n");
+	exit(1);
+}
+
 int main(int argc, char **argv)
 {
 	Display *dpy;
@@ -137,6 +143,8 @@ int main(int argc, char **argv)
 			case 'f':
 				foreground = 1;
 				break;
+			default:
+				usage();
 		}
 	}
 
